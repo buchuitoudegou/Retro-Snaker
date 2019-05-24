@@ -3,6 +3,7 @@
 SnakeBody::SnakeBody() {
   initVAO();
   bodyDir = 0.0f;
+  isInTrack = false;
 }
 
 void SnakeBody::draw() {

@@ -59,6 +59,7 @@ public:
   void initVAO();
   glm::vec3 position;
   float bodyDir;
+  bool isInTrack;
 };
 
 #endif

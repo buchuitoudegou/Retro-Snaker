@@ -119,10 +119,15 @@ int main() {
 			);
 		}
 		// render snake
-		for (int i = 0; i < snake.length; ++i) {
+		for (int i = 0; i < snake.getLength(); ++i) {
+			glm::vec3 color = glm::vec3(0, 1, 0);
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, snake.bodies[i].position);
 			model = glm::rotate(model, glm::radians(snake.bodies[i].bodyDir), glm::vec3(0, 1, 0));
+			if (i == 0) {
+				color = glm::vec3(1, 0, 1);
+				model = glm::scale(model, glm::vec3(1.05, 1.05, 1.05));
+			}
 			EntityRenderer::renderEntity(
 				&snakeShader,
 				&snake.bodies[i],
@@ -132,7 +137,7 @@ int main() {
 				model, 
 				lightPos,
 				camera.position,
-				glm::vec3(0, 1, 0)
+				color
 			);
 		}
 		// render imgui
@@ -203,8 +208,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 		autoScale = !autoScale;
 	}
 	if (key >= 0 && key < 1024) {
-		if (action == GLFW_PRESS)
+		if (action == GLFW_PRESS) {
 			keys[key] = true;
+		}
 		else if (action == GLFW_RELEASE)
 			keys[key] = false;
 	}
