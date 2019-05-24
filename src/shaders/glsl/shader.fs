@@ -13,6 +13,8 @@ in VS_OUT {
 uniform sampler2D texture_diffuse_0;
 uniform sampler2D shadowMap;
 
+uniform bool useVertColor;
+
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
