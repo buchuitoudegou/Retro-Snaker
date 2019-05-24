@@ -17,6 +17,7 @@ public:
   vector<pair<glm::vec3, float> > headOps;
   vector<int> opIndices;
   Snake();
+  void moveTo(glm::vec3);
   void move(GLfloat dtime);
   void turn(float);
   int getLength() const;

@@ -37,6 +37,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void move(GLfloat dtime, Snake&);
 void initImgui(GLFWwindow*);
 void renderImgui(bool);
+bool collisionDetect(vector<Fence>&, Snake& snake);
 
 int main() {
 	camera.front = glm::vec3(0.000, -0.973, 0.223);
@@ -144,7 +145,8 @@ int main() {
 		renderImgui(menu);
     // --------------------------------
     // move camera and swap buffer
-    move(curFrame - lastFrame, snake);
+		bool isCollide = collisionDetect(fences, snake);
+		move(curFrame - lastFrame, snake);
 		lastFrame = curFrame;
 		glfwMakeContextCurrent(window);
 		glfwSwapBuffers(window);
@@ -229,7 +231,6 @@ void move(GLfloat dtime, Snake& snake) {
 	}
 	if (keys[GLFW_KEY_S]) {
 		// camera.keyboardHandler(BACKWARD, dtime);
-
 	}
 	if (keys[GLFW_KEY_A]) {
 		// camera.keyboardHandler(LEFT, dtime);
@@ -263,4 +264,30 @@ void renderImgui(bool menu) {
 	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+bool collisionDetect(vector<Fence>& fences, Snake& snake) {
+	for (int i = 0; i < fences.size(); ++i) {
+		Fence curFence = fences[i];
+		float dist = glm::distance2(snake.bodies[0].position, curFence.position);
+		if (dist < 2) {
+			glm::vec3 newPos = curFence.position;
+			if (newPos.z == 0) {
+				// bottom boundary
+				newPos.z = GROUND_HEIGHT - 2 * 2 - 1.7;
+			} else if (newPos.z == GROUND_HEIGHT - 2 * 2) {
+				// top boundary
+				newPos.z = 0 + 1.7;
+			} else if (newPos.x == 0) {
+				// left boundary
+				newPos.x = GROUND_WIDTH / 2 - 2 - 1.7;
+			} else {
+				// right boundary
+				newPos.x = 0 + 1.7;
+			}
+			snake.moveTo(newPos);
+			return true;
+		}
+	}
+	return false;
 }

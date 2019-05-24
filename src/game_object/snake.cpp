@@ -72,3 +72,7 @@ void Snake::turn(float angle) {
 int Snake::getLength() const {
   return this->bodies.size();
 }
+
+void Snake::moveTo(glm::vec3 newPos) {
+  bodies[0].position = newPos;
+}
