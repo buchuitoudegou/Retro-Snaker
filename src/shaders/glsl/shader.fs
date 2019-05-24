@@ -58,14 +58,14 @@ void main()
 {           
     // vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
     vec3 color;
-    if (fs_in.vertColor != vec3(-1, -1, -1))
+    if (useVertColor)
         color = fs_in.vertColor;
     else
         color = texture(texture_diffuse_0, fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
     vec3 lightColor = vec3(0.5);
     // ambient
-    vec3 ambient = 0.5 * color;
+    vec3 ambient = 0.8 * color;
     // diffuse
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     float diff = max(dot(lightDir, normal), 0.0);

@@ -9,10 +9,14 @@ objects := $(build)/camera.o $(build)/plane.o $(build)/entity.o $(build)/entityR
 $(build)/shader.o $(build)/main.o $(build)/glad.o $(build)/fence.o \
 $(build)/imgui.o $(build)/imgui_draw.o $(build)/imgui_impl_glfw.o \
 $(build)/imgui_impl_opengl3.o $(build)/imgui_widgets.o \
-$(build)/snakeBody.o $(build)/snake.o
+$(build)/snakeBody.o $(build)/snake.o $(build)/stb_image.o
 
 $(target) : $(objects)
 	g++ $(objects) -lglfw $(CFLAGS) -o $@
+
+# stb image
+$(build)/stb_image.o : $(src)/stb_image/stb_image.cpp
+	g++ $< -o $@ $(CFLAGS) -c
 
 # glad
 $(build)/glad.o : $(src)/glad.c

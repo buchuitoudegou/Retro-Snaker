@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "../stb_image/stb_image.h"
 
 class Fence : public Entity {
 private:
@@ -54,6 +55,7 @@ private:
   };
   unsigned int cubeVAO, cubeVBO, texture;
   void initVAO();
+  void initTexture();
 public:
   void draw();
   Fence();

@@ -5,6 +5,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "../stb_image/stb_image.h"
 
 class SnakeBody : public Entity {
 public:
@@ -57,6 +58,7 @@ public:
   };
   unsigned int cubeVAO, cubeVBO, texture;
   void initVAO();
+  void initTexture();
   glm::vec3 position;
   float bodyDir;
   bool isInTrack;

@@ -89,12 +89,13 @@ int main() {
     glClearColor(0.3, 0.4, 0.5, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // render plane
+		planeShader.setInt("texture_diffuse_0", 0);
 		glm::mat4 planeModel = glm::mat4(1.0f);
 		planeModel = glm::translate(planeModel, glm::vec3(plx, ply, plz));
     EntityRenderer::renderEntity(
       &planeShader,
       &plane,
-      true,
+      false,
       projection,
       camera.getViewMat(),
       planeModel,
@@ -110,7 +111,7 @@ int main() {
 			EntityRenderer::renderEntity(
 				&fenceShader,
 				&fences[i],
-				true,
+				false,
 				projection,
 				camera.getViewMat(),
 				model,
@@ -121,18 +122,20 @@ int main() {
 		}
 		// render snake
 		for (int i = 0; i < snake.getLength(); ++i) {
+			bool useVertColor = false;
 			glm::vec3 color = glm::vec3(0, 1, 0);
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, snake.bodies[i].position);
 			model = glm::rotate(model, glm::radians(snake.bodies[i].bodyDir), glm::vec3(0, 1, 0));
 			if (i == 0) {
-				color = glm::vec3(1, 0, 1);
+				useVertColor = true;
+				color = glm::vec3(143.0 / 256.0, 188.0 / 256.0, 143.0 / 256.0);
 				model = glm::scale(model, glm::vec3(1.05, 1.05, 1.05));
 			}
 			EntityRenderer::renderEntity(
 				&snakeShader,
 				&snake.bodies[i],
-				true,
+				useVertColor,
 				projection,
 				camera.getViewMat(),
 				model, 
