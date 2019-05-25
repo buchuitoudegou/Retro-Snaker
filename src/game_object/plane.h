@@ -22,7 +22,7 @@ unsigned int texture;
 Plane();
 void initPlaneVAO();
 void initTexture();
-void draw();
+void draw(Shader* shader = nullptr);
 };
 
 #endif

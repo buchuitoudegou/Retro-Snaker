@@ -5,7 +5,7 @@ Plane::Plane() {
 	initTexture();
 }
 
-void Plane::draw() {
+void Plane::draw(Shader* shader) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
   glBindVertexArray(planeVAO);

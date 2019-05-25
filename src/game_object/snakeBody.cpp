@@ -7,7 +7,7 @@ SnakeBody::SnakeBody() {
   isInTrack = false;
 }
 
-void SnakeBody::draw() {
+void SnakeBody::draw(Shader* shader) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
   glBindVertexArray(cubeVAO);

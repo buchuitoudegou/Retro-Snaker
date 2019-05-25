@@ -5,6 +5,7 @@
 #include "game_object/plane.h"
 #include "game_object/fence.h"
 #include "game_object/snake.h"
+#include "game_object/apple.h"
 
 #include <vector>
 
@@ -37,7 +38,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void move(GLfloat dtime, Snake&);
 void initImgui(GLFWwindow*);
 void renderImgui(bool);
-bool collisionDetect(vector<Fence>&, Snake& snake);
+bool crossOverDetect(vector<Fence>&, Snake& snake);
 
 int main() {
 	camera.front = glm::vec3(0.000, -0.973, 0.223);
@@ -53,7 +54,8 @@ int main() {
   // create shaders
   Shader planeShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
   Shader fenceShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
-  Shader snakeShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");  
+  Shader snakeShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
+	Shader appleShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
 	// --------------------------------
   // create game object
 	// 1. plane
@@ -78,8 +80,11 @@ int main() {
 		temp_r.position = glm::vec3(GROUND_WIDTH / 2 - 2, 0, i * 2 + 2);
 		fences.push_back(temp_r);
 	}
-	// snake
+	// 3. snake
 	Snake snake;
+	// 4. apple
+	Apple apple;
+	apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);
   // --------------------------------
   // create projection
   glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -88,7 +93,9 @@ int main() {
     curFrame = glfwGetTime();
     glClearColor(0.3, 0.4, 0.5, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // render plane
+		// ------------------------------
+		// render object
+    // 1. render plane
 		planeShader.setInt("texture_diffuse_0", 0);
 		glm::mat4 planeModel = glm::mat4(1.0f);
 		planeModel = glm::translate(planeModel, glm::vec3(plx, ply, plz));
@@ -103,7 +110,7 @@ int main() {
       camera.position,
       glm::vec3(1, 1, 1)
     );
-    // render fence
+    // 2. render fence
 		for (int i = 0; i < fences.size(); ++i) {
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, fences[i].position);
@@ -120,7 +127,7 @@ int main() {
 				glm::vec3(0.5, 0.3, 0)
 			);
 		}
-		// render snake
+		// 3. render snake
 		for (int i = 0; i < snake.getLength(); ++i) {
 			bool useVertColor = false;
 			glm::vec3 color = glm::vec3(0, 1, 0);
@@ -144,11 +151,28 @@ int main() {
 				color
 			);
 		}
-		// render imgui
+		// 4. render apple
+		glm::mat4 appleModel = glm::mat4(1.0f);
+		appleModel = glm::translate(appleModel, glm::vec3(6, 0, 6));
+		appleModel = glm::scale(appleModel, glm::vec3(0.015, 0.015, 0.015));
+		EntityRenderer::renderEntity(
+				&appleShader,
+				&apple,
+				false,
+				projection,
+				camera.getViewMat(),
+				appleModel, 
+				lightPos,
+				camera.position,
+				glm::vec3(0, 0, 0)
+			);
+		// 5. render imgui
 		renderImgui(menu);
+		// --------------------------------
+		// cross over
+		bool isCollide = crossOverDetect(fences, snake);
     // --------------------------------
     // move camera and swap buffer
-		bool isCollide = collisionDetect(fences, snake);
 		move(curFrame - lastFrame, snake);
 		lastFrame = curFrame;
 		glfwMakeContextCurrent(window);
@@ -269,7 +293,7 @@ void renderImgui(bool menu) {
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-bool collisionDetect(vector<Fence>& fences, Snake& snake) {
+bool crossOverDetect(vector<Fence>& fences, Snake& snake) {
 	for (int i = 0; i < fences.size(); ++i) {
 		Fence curFence = fences[i];
 		float dist = glm::distance2(snake.bodies[0].position, curFence.position);

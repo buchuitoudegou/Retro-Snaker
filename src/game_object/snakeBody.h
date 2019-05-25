@@ -9,7 +9,7 @@
 
 class SnakeBody : public Entity {
 public:
-  void draw();
+  void draw(Shader* shader = nullptr);
   SnakeBody();
 
   float vertices[48 * 6] = {

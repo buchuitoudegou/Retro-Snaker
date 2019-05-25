@@ -9,10 +9,11 @@ objects := $(build)/camera.o $(build)/plane.o $(build)/entity.o $(build)/entityR
 $(build)/shader.o $(build)/main.o $(build)/glad.o $(build)/fence.o \
 $(build)/imgui.o $(build)/imgui_draw.o $(build)/imgui_impl_glfw.o \
 $(build)/imgui_impl_opengl3.o $(build)/imgui_widgets.o \
-$(build)/snakeBody.o $(build)/snake.o $(build)/stb_image.o
+$(build)/snakeBody.o $(build)/snake.o $(build)/stb_image.o\
+$(build)/mesh.o $(build)/loader.o $(build)/apple.o
 
 $(target) : $(objects)
-	g++ $(objects) -lglfw $(CFLAGS) -o $@
+	g++ $(objects) -lglfw -lassimp $(CFLAGS) -o $@
 
 # stb image
 $(build)/stb_image.o : $(src)/stb_image/stb_image.cpp
@@ -48,6 +49,9 @@ $(build)/snakeBody.o : $(src)/game_object/snakeBody.cpp $(src)/game_object/snake
 # snake
 $(build)/snake.o : $(src)/game_object/snake.cpp $(src)/game_object/snake.h
 	g++ $< -o $@ $(CFLAGS) -c
+# apple
+$(build)/apple.o : $(src)/game_object/apple.cpp $(src)/game_object/apple.h
+	g++ $< -o $@ $(CFLAGS) -c
 
 # ---------------------------
 # renderer                  |
@@ -61,6 +65,17 @@ $(build)/entityRenderer.o : $(src)/renderer/entityRenderer.cpp $(src)/renderer/e
 # ---------------------------
 # shader
 $(build)/shader.o : $(src)/shaders/shader.cpp $(src)/shaders/shader.h
+	g++ $< -o $@ $(CFLAGS) -c
+
+# ---------------------------
+# model loader              |
+# ---------------------------
+# mesh
+$(build)/mesh.o : $(src)/mesh/mesh.cpp $(src)/mesh/mesh.h
+	g++ $< -o $@ $(CFLAGS) -c
+
+# model loader
+$(build)/loader.o : $(src)/model_loader/loader.cpp $(src)/model_loader/loader.h
 	g++ $< -o $@ $(CFLAGS) -c
 
 # build imgui

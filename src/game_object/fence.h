@@ -57,7 +57,7 @@ private:
   void initVAO();
   void initTexture();
 public:
-  void draw();
+  void draw(Shader* shader = nullptr);
   Fence();
   glm::vec3 position;
 };

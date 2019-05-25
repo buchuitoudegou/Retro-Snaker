@@ -18,6 +18,6 @@ void EntityRenderer::renderEntity(
   shader->setVec3("lightPos", lightPos);
   shader->setVec3("viewPos", viewPos);
   shader->setVec3("vertColor", vertColor);
-  entity->draw();
+  entity->draw(shader);
   shader->unuse();
 } 

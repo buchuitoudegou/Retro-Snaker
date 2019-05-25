@@ -14,7 +14,7 @@ uniform sampler2D texture_diffuse_0;
 uniform sampler2D shadowMap;
 
 uniform bool useVertColor;
-
+uniform bool useMeshColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
@@ -58,7 +58,7 @@ void main()
 {           
     // vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
     vec3 color;
-    if (useVertColor)
+    if (useVertColor || useMeshColor)
         color = fs_in.vertColor;
     else
         color = texture(texture_diffuse_0, fs_in.TexCoords).rgb;

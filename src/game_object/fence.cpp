@@ -23,7 +23,7 @@ void Fence::initVAO() {
   glBindVertexArray(0);
 }
 
-void Fence::draw() {
+void Fence::draw(Shader* shader) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture);
   glBindVertexArray(cubeVAO);
