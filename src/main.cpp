@@ -25,8 +25,8 @@ bool keys[1024];
 // global params
 float SCR_WIDTH = 800, SCR_HEIGHT = 800; // window size
 GLfloat curFrame = 0.0f, lastFrame = 0.0f; // time
-glm::vec3 lightPos = glm::vec3(-5, 3, -4); // light
-int GROUND_WIDTH = 32 * 2, GROUND_HEIGHT = 16 * 2; // ground size
+glm::vec3 lightPos = glm::vec3(16, 3, 16); // light
+int GROUND_WIDTH = 16 * 2, GROUND_HEIGHT = 16 * 2; // ground size
 // --------------------------------
 // plane position
 float plx = 14.451, ply = -0.5, plz = 16.763;
@@ -39,6 +39,7 @@ void move(GLfloat dtime, Snake&);
 void initImgui(GLFWwindow*);
 void renderImgui(bool);
 bool crossOverDetect(vector<Fence>&, Snake& snake);
+bool foodEatenDetect(Apple&, Snake&);
 
 int main() {
 	camera.front = glm::vec3(0.000, -0.973, 0.223);
@@ -64,20 +65,18 @@ int main() {
 	vector<Fence> fences;
 	// set fence's position
   for (int i = 0; i < GROUND_WIDTH / 2; ++i) {
-		Fence temp;
-		if (i < GROUND_WIDTH / 4) {
-			temp.position = glm::vec3(i * 2, 0, 0);
-		} else if (i < GROUND_WIDTH / 2) {
-			temp.position = glm::vec3((i - GROUND_WIDTH / 4) * 2, 0, GROUND_HEIGHT - 2 * 2);
-		}
-		fences.push_back(temp);
+		Fence temp1, temp2;
+		temp1.position = glm::vec3(i * 2, 0, 0);
+		temp2.position = glm::vec3(i * 2, 0, GROUND_HEIGHT - 2 * 2);
+		fences.push_back(temp1);
+		fences.push_back(temp2);
 	}
 	for (int i = 0; i < GROUND_HEIGHT / 2 - 2; ++i) {
 		Fence temp;
 		temp.position = glm::vec3(0, 0, i * 2 + 2);
 		fences.push_back(temp);
 		Fence temp_r;
-		temp_r.position = glm::vec3(GROUND_WIDTH / 2 - 2, 0, i * 2 + 2);
+		temp_r.position = glm::vec3(GROUND_WIDTH - 2, 0, i * 2 + 2);
 		fences.push_back(temp_r);
 	}
 	// 3. snake
@@ -127,7 +126,22 @@ int main() {
 				glm::vec3(0.5, 0.3, 0)
 			);
 		}
-		// 3. render snake
+		// 3. render apple
+		glm::mat4 appleModel = glm::mat4(1.0f);
+		appleModel = glm::translate(appleModel, apple.position);
+		appleModel = glm::scale(appleModel, glm::vec3(0.015, 0.015, 0.015));
+		EntityRenderer::renderEntity(
+				&appleShader,
+				&apple,
+				false,
+				projection,
+				camera.getViewMat(),
+				appleModel, 
+				lightPos,
+				camera.position,
+				glm::vec3(0, 0, 0)
+		);
+		// 4. render snake
 		for (int i = 0; i < snake.getLength(); ++i) {
 			bool useVertColor = false;
 			glm::vec3 color = glm::vec3(0, 1, 0);
@@ -151,23 +165,11 @@ int main() {
 				color
 			);
 		}
-		// 4. render apple
-		glm::mat4 appleModel = glm::mat4(1.0f);
-		appleModel = glm::translate(appleModel, glm::vec3(6, 0, 6));
-		appleModel = glm::scale(appleModel, glm::vec3(0.015, 0.015, 0.015));
-		EntityRenderer::renderEntity(
-				&appleShader,
-				&apple,
-				false,
-				projection,
-				camera.getViewMat(),
-				appleModel, 
-				lightPos,
-				camera.position,
-				glm::vec3(0, 0, 0)
-			);
 		// 5. render imgui
 		renderImgui(menu);
+		// --------------------------------
+		// food eaten
+		bool isEaten = foodEatenDetect(apple, snake);
 		// --------------------------------
 		// cross over
 		bool isCollide = crossOverDetect(fences, snake);
@@ -307,7 +309,7 @@ bool crossOverDetect(vector<Fence>& fences, Snake& snake) {
 				newPos.z = 0 + 1.7;
 			} else if (newPos.x == 0) {
 				// left boundary
-				newPos.x = GROUND_WIDTH / 2 - 2 - 1.7;
+				newPos.x = GROUND_WIDTH - 2 - 1.7;
 			} else {
 				// right boundary
 				newPos.x = 0 + 1.7;
@@ -315,6 +317,14 @@ bool crossOverDetect(vector<Fence>& fences, Snake& snake) {
 			snake.moveTo(newPos);
 			return true;
 		}
+	}
+	return false;
+}
+
+bool foodEatenDetect(Apple& apple, Snake& snake) {
+	if (glm::distance2(apple.position, snake.bodies[0].position) < 1.7) {
+		apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);
+		return true;
 	}
 	return false;
 }

@@ -3,6 +3,7 @@
 Apple::Apple() {
   loader = new ModelLoader("./assets/Apple.obj");
   srand(time(NULL));
+  position = glm::vec3(6.0, 0, 6.0);
 }
 
 Apple::~Apple() {
@@ -15,7 +16,8 @@ void Apple::draw(Shader* shader) {
 }
 
 void Apple::randPosition(float width, float height) {
-  float randX = 0 + width * rand() / (float)(RAND_MAX + 1);
-  float randZ = 0 + height * rand() / (float)(RAND_MAX + 1);
+  float randX = 2 + (width - 8) * rand() / (float)(RAND_MAX);
+  float randZ = 2 + (height - 8) * rand() / (float)(RAND_MAX);
+  cout << randX << " " << randZ << endl;
   position = glm::vec3(randX, 0, randZ);
 }
