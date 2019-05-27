@@ -14,6 +14,7 @@ public:
   vector<SnakeBody> bodies;
   float snakeSpeed;
   static float turnAngle;
+  static unsigned int MAX_LENGTH;
   vector<pair<glm::vec3, float> > headOps;
   vector<int> opIndices;
   Snake();

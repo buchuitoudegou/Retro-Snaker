@@ -10,7 +10,8 @@ $(build)/shader.o $(build)/main.o $(build)/glad.o $(build)/fence.o \
 $(build)/imgui.o $(build)/imgui_draw.o $(build)/imgui_impl_glfw.o \
 $(build)/imgui_impl_opengl3.o $(build)/imgui_widgets.o \
 $(build)/snakeBody.o $(build)/snake.o $(build)/stb_image.o\
-$(build)/mesh.o $(build)/loader.o $(build)/apple.o
+$(build)/mesh.o $(build)/loader.o $(build)/apple.o\
+$(build)/obstacle.o
 
 $(target) : $(objects)
 	g++ $(objects) -lglfw -lassimp $(CFLAGS) -o $@
@@ -51,6 +52,9 @@ $(build)/snake.o : $(src)/game_object/snake.cpp $(src)/game_object/snake.h
 	g++ $< -o $@ $(CFLAGS) -c
 # apple
 $(build)/apple.o : $(src)/game_object/apple.cpp $(src)/game_object/apple.h
+	g++ $< -o $@ $(CFLAGS) -c
+# obstacle
+$(build)/obstacle.o : $(src)/game_object/obstacle.cpp $(src)/game_object/obstacle.h
 	g++ $< -o $@ $(CFLAGS) -c
 
 # ---------------------------

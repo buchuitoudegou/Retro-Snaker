@@ -1,6 +1,7 @@
 #include "snake.h"
 
 float Snake::turnAngle = 0.5f;
+unsigned int Snake::MAX_LENGTH = 12;
 
 Snake::Snake() {
   bodies.push_back(SnakeBody());
@@ -78,15 +79,16 @@ void Snake::moveTo(glm::vec3 newPos) {
 }
 
 void Snake::lengthen() {
+  if (bodies.size() >= MAX_LENGTH) {
+    return;
+  }
   SnakeBody newBody;
   newBody.bodyDir = bodies[bodies.size() - 1].bodyDir;
-  glm::vec3 dir = glm::vec3(-2 * sin(glm::radians(bodies[bodies.size() - 1].bodyDir)), 0,
-     -cos(glm::radians(bodies[bodies.size() - 1].bodyDir)) * 2);
+  glm::vec3 dir = glm::vec3(-2.4 * sin(glm::radians(bodies[bodies.size() - 1].bodyDir)), 0,
+     -cos(glm::radians(bodies[bodies.size() - 1].bodyDir)) * 2.4);
   glm::vec3 pos = bodies[bodies.size() - 1].position + dir;
   newBody.position = pos;
   newBody.isInTrack = false;
-  // cout << pos.x << " " << pos.y << " " << pos.z << endl;
   bodies.push_back(newBody);
   opIndices.push_back(0);
-
 }

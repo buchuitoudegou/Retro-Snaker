@@ -6,6 +6,7 @@
 #include "game_object/fence.h"
 #include "game_object/snake.h"
 #include "game_object/apple.h"
+#include "game_object/obstacle.h"
 
 #include <vector>
 
@@ -27,6 +28,8 @@ float SCR_WIDTH = 800, SCR_HEIGHT = 800; // window size
 GLfloat curFrame = 0.0f, lastFrame = 0.0f; // time
 glm::vec3 lightPos = glm::vec3(16, 3, 16); // light
 int GROUND_WIDTH = 16 * 2, GROUND_HEIGHT = 16 * 2; // ground size
+bool gameover = false; // is dead
+int score = 0;
 // --------------------------------
 // plane position
 float plx = 14.451, ply = -0.5, plz = 16.763;
@@ -40,6 +43,7 @@ void initImgui(GLFWwindow*);
 void renderImgui(bool);
 bool crossOverDetect(vector<Fence>&, Snake& snake);
 bool foodEatenDetect(Apple&, Snake&);
+bool obsCollisionDetect(vector<Obstacle>&, Snake& snake);
 
 int main() {
 	camera.front = glm::vec3(0.000, -0.973, 0.223);
@@ -57,6 +61,7 @@ int main() {
   Shader fenceShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
   Shader snakeShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
 	Shader appleShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
+	Shader obstacleShader("src/shaders/glsl/shader.vs", "src/shaders/glsl/shader.fs");
 	// --------------------------------
   // create game object
 	// 1. plane
@@ -83,7 +88,16 @@ int main() {
 	Snake snake;
 	// 4. apple
 	Apple apple;
-	// apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);
+	apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);
+	// 5. obstacle
+	vector<Obstacle> obstacles;
+	for (int i = 0; i < 3; ++i) {
+		Obstacle tmp;
+		obstacles.push_back(tmp);
+	}
+	obstacles[0].position = glm::vec3(10, 0, 16);
+	obstacles[1].position = glm::vec3(20, 0, 8);
+	obstacles[2].position = glm::vec3(16, 0, 18);
   // --------------------------------
   // create projection
   glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -152,6 +166,9 @@ int main() {
 				useVertColor = true;
 				color = glm::vec3(143.0 / 256.0, 188.0 / 256.0, 143.0 / 256.0);
 				model = glm::scale(model, glm::vec3(1.05, 1.05, 1.05));
+				if (gameover) {
+					color = glm::vec3(1.0f, 0, 0);
+				}
 			}
 			EntityRenderer::renderEntity(
 				&snakeShader,
@@ -165,21 +182,46 @@ int main() {
 				color
 			);
 		}
-		// 5. render imgui
+		// 5. render obstacle
+		for (int i = 0; i < obstacles.size(); ++i) {
+			glm::mat4 obsModel = glm::mat4(1.0f);
+			obsModel = glm::translate(obsModel, obstacles[i].position);
+			EntityRenderer::renderEntity(
+				&obstacleShader,
+				&obstacles[i],
+				false,
+				projection,
+				camera.getViewMat(),
+				obsModel,
+				lightPos,
+				camera.position,
+				glm::vec3(0, 0, 0)
+			);
+		}
+		// 6. render imgui
 		renderImgui(menu);
+		// --------------------------------
+		// collide with obstacle
+		bool isDead = obsCollisionDetect(obstacles, snake);	
+		if (isDead) {
+			gameover = true;
+		}
 		// --------------------------------
 		// food eaten
 		bool isEaten = foodEatenDetect(apple, snake);
 		if (isEaten) {
+			score ++;
 			snake.lengthen();
 		}
 		// --------------------------------
 		// cross over
-		bool isCollide = crossOverDetect(fences, snake);
+		bool isCross = crossOverDetect(fences, snake);
     // --------------------------------
     // move camera and swap buffer
-		move(curFrame - lastFrame, snake);
-		lastFrame = curFrame;
+		if (!gameover) {
+			move(curFrame - lastFrame, snake);
+			lastFrame = curFrame;
+		}
 		glfwMakeContextCurrent(window);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -287,12 +329,20 @@ void renderImgui(bool menu) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	ImGui::Begin("Menu", &menu, ImGuiWindowFlags_MenuBar);
-	ImGui::SliderFloat("p x", &plx, -100, 100);
-	ImGui::SliderFloat("p y", &ply, -100, 100);
-	ImGui::SliderFloat("p z", &plz, -100, 100);
-	ImGui::SliderFloat("c x", &camera.position.x, -10, 100);
-	ImGui::SliderFloat("c y", &camera.position.y, -10, 100);
-	ImGui::SliderFloat("c z", &camera.position.z, -10, 100);
+	// ImGui::SliderFloat("p x", &plx, -100, 100);
+	// ImGui::SliderFloat("p y", &ply, -100, 100);
+	// ImGui::SliderFloat("p z", &plz, -100, 100);
+	// ImGui::SliderFloat("c x", &camera.position.x, -10, 100);
+	// ImGui::SliderFloat("c y", &camera.position.y, -10, 100);
+	// ImGui::SliderFloat("c z", &camera.position.z, -10, 100);
+	if (!gameover) {
+		ImGui::Value("Your Score: ", score);
+		if (score > 12) {
+			ImGui::Text("Your snake has got the longest body!");
+		}
+	} else {
+		ImGui::Text("You lose!");
+	}
 	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -325,9 +375,23 @@ bool crossOverDetect(vector<Fence>& fences, Snake& snake) {
 }
 
 bool foodEatenDetect(Apple& apple, Snake& snake) {
-	if (glm::distance2(apple.position, snake.bodies[0].position) < 1.7) {
+	if (glm::distance2(apple.position, snake.bodies[0].position) < 2) {
 		apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);
+		while (glm::distance2(apple.position, glm::vec3(10, 0, 16)) < 2 ||
+			glm::distance2(apple.position, glm::vec3(20, 0, 8)) < 2 ||
+			glm::distance2(apple.position, glm::vec3(16, 0, 18)) < 2) {
+			apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);				
+		}
 		return true;
+	}
+	return false;
+}
+
+bool obsCollisionDetect(vector<Obstacle>& obstacles, Snake& snake) {
+	for (int i = 0; i < obstacles.size(); ++i) {
+		if (glm::distance2(obstacles[i].position, snake.bodies[0].position) < 2) {
+			return true;
+		}
 	}
 	return false;
 }
