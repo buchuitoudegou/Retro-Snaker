@@ -27,7 +27,7 @@ make & make run
 
 ![preview](./snapshot/crossover.png)
 
-![preview](./snapshot/all direction turn.png)
+![preview](./snapshot/all%20direction%20turn.png)
 
 ![preview](./snapshot/gameover.png)
 
