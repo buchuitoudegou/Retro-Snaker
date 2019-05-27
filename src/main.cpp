@@ -47,7 +47,8 @@ bool obsCollisionDetect(vector<Obstacle>&, Snake& snake);
 bool selfEatenDetect(Snake&);
 
 int main() {
-	camera.front = glm::vec3(0.000, -0.973, 0.223);
+	camera.yaw = -270.220;
+	camera.pitch = -78.796;
   GLFWwindow* window = openGLallInit();
 	glEnable(GL_DEPTH_TEST);
   if (window == NULL) {
@@ -104,6 +105,7 @@ int main() {
   glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
   while (!glfwWindowShouldClose(window)) {
     // update time and background
+		camera.updateCamera();
     curFrame = glfwGetTime();
     glClearColor(0.3, 0.4, 0.5, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -337,15 +339,14 @@ void renderImgui(bool menu) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 	ImGui::Begin("Menu", &menu, ImGuiWindowFlags_MenuBar);
-	// ImGui::SliderFloat("p x", &plx, -100, 100);
-	// ImGui::SliderFloat("p y", &ply, -100, 100);
-	// ImGui::SliderFloat("p z", &plz, -100, 100);
-	// ImGui::SliderFloat("c x", &camera.position.x, -10, 100);
-	// ImGui::SliderFloat("c y", &camera.position.y, -10, 100);
-	// ImGui::SliderFloat("c z", &camera.position.z, -10, 100);
+	ImGui::SliderFloat("yaw", &camera.yaw, -360, 360);
+	ImGui::SliderFloat("pitch", &camera.pitch, -89, 89);
+	ImGui::SliderFloat("c x", &camera.position.x, -10, 100);
+	ImGui::SliderFloat("c y", &camera.position.y, -10, 100);
+	ImGui::SliderFloat("c z", &camera.position.z, -10, 100);
 	if (!gameover) {
 		ImGui::Value("Your Score", score);
-		if (score > 6) {
+		if (score >= 6) {
 			ImGui::Text("Your snake has got the longest body!");
 		}
 	} else {
