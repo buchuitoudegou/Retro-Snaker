@@ -83,7 +83,7 @@ int main() {
 	Snake snake;
 	// 4. apple
 	Apple apple;
-	apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);
+	// apple.randPosition(GROUND_WIDTH, GROUND_HEIGHT);
   // --------------------------------
   // create projection
   glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -170,6 +170,9 @@ int main() {
 		// --------------------------------
 		// food eaten
 		bool isEaten = foodEatenDetect(apple, snake);
+		if (isEaten) {
+			snake.lengthen();
+		}
 		// --------------------------------
 		// cross over
 		bool isCollide = crossOverDetect(fences, snake);

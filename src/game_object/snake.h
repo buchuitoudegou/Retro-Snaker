@@ -18,6 +18,7 @@ public:
   vector<int> opIndices;
   Snake();
   void moveTo(glm::vec3);
+  void lengthen();
   void move(GLfloat dtime);
   void turn(float);
   int getLength() const;

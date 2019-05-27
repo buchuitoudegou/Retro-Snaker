@@ -76,3 +76,17 @@ int Snake::getLength() const {
 void Snake::moveTo(glm::vec3 newPos) {
   bodies[0].position = newPos;
 }
+
+void Snake::lengthen() {
+  SnakeBody newBody;
+  newBody.bodyDir = bodies[bodies.size() - 1].bodyDir;
+  glm::vec3 dir = glm::vec3(-2 * sin(glm::radians(bodies[bodies.size() - 1].bodyDir)), 0,
+     -cos(glm::radians(bodies[bodies.size() - 1].bodyDir)) * 2);
+  glm::vec3 pos = bodies[bodies.size() - 1].position + dir;
+  newBody.position = pos;
+  newBody.isInTrack = false;
+  // cout << pos.x << " " << pos.y << " " << pos.z << endl;
+  bodies.push_back(newBody);
+  opIndices.push_back(0);
+
+}
