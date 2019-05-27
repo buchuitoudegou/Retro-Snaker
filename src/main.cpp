@@ -299,6 +299,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void move(GLfloat dtime, Snake& snake) {
+	// snake.move(dtime);
 	if (keys[GLFW_KEY_W]) {
 		// camera.keyboardHandler(FORWARD, dtime);
 		snake.move(dtime);
@@ -336,8 +337,8 @@ void renderImgui(bool menu) {
 	// ImGui::SliderFloat("c y", &camera.position.y, -10, 100);
 	// ImGui::SliderFloat("c z", &camera.position.z, -10, 100);
 	if (!gameover) {
-		ImGui::Value("Your Score: ", score);
-		if (score > 12) {
+		ImGui::Value("Your Score", score);
+		if (score > 6) {
 			ImGui::Text("Your snake has got the longest body!");
 		}
 	} else {

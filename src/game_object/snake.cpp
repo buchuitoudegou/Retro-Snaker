@@ -67,7 +67,28 @@ void Snake::move(GLfloat dtime) {
 }
 
 void Snake::turn(float angle) {
-  bodies[0].bodyDir += angle;
+  float d1 = bodies[0].bodyDir, d2 = bodies[1].bodyDir;
+  if (d1 > 0) {
+    while (d1 > 360) {
+      d1 -= 360;
+    }
+  } else {
+    while (d1 < -360) {
+      d1 += 360;
+    }
+  }
+  if (d2 > 0) {
+    while (d2 > 360) {
+      d2 -= 360;
+    }
+  } else {
+    while (d2 < -360) {
+      d2 += 360;
+    }
+  }
+  if (abs(d1 - d2) <= 90 || abs(d1 + angle - d2) <= 90) {
+    bodies[0].bodyDir += angle;
+  }
 }
 
 int Snake::getLength() const {
