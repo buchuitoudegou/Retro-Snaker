@@ -44,6 +44,7 @@ void renderImgui(bool);
 bool crossOverDetect(vector<Fence>&, Snake& snake);
 bool foodEatenDetect(Apple&, Snake&);
 bool obsCollisionDetect(vector<Obstacle>&, Snake& snake);
+bool selfEatenDetect(Snake&);
 
 int main() {
 	camera.front = glm::vec3(0.000, -0.973, 0.223);
@@ -212,6 +213,12 @@ int main() {
 		if (isEaten) {
 			score ++;
 			snake.lengthen();
+		}
+		// --------------------------------
+		// self eaten
+		bool isEatenBySelf = selfEatenDetect(snake);
+		if (isEatenBySelf) {
+			gameover = true;
 		}
 		// --------------------------------
 		// cross over
@@ -391,6 +398,15 @@ bool foodEatenDetect(Apple& apple, Snake& snake) {
 bool obsCollisionDetect(vector<Obstacle>& obstacles, Snake& snake) {
 	for (int i = 0; i < obstacles.size(); ++i) {
 		if (glm::distance2(obstacles[i].position, snake.bodies[0].position) < 2) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool selfEatenDetect(Snake& snake) {
+	for (int i = 4; i < snake.bodies.size(); ++i) {
+		if (glm::distance2(snake.bodies[0].position, snake.bodies[i].position) < 1.5) {
 			return true;
 		}
 	}
