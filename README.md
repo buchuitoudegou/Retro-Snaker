@@ -31,4 +31,4 @@ make & make run
 
 ![preview](./snapshot/gameover.png)
 
-![preview](./snapshot/adjust camera.png)
+![preview](https://github.com/buchuitoudegou/Retro-Snaker/raw/master/snapshot/adjust%20camera.png)
